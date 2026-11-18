@@ -58,6 +58,8 @@ titles, memory and process IDs, nothing else, and nothing leaves your Mac.
 Requires macOS 14 or later and Google Chrome.
 
 ```sh
+brew tap lior-pesoa/tap
+brew trust lior-pesoa/tap      # Homebrew asks you to trust third-party taps once
 brew install --cask lior-pesoa/tap/ramcap
 ```
 
