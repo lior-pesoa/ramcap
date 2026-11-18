@@ -112,8 +112,13 @@ zip="$out/RAMcap-$version.zip"
 ditto -c -k --keepParent "$app" "$zip"
 sha="$(shasum -a 256 "$zip" | cut -d' ' -f1)"
 echo "$sha" > "$zip.sha256"
+# Same file under a fixed name, for ramcap.app's link to releases/latest/download/RAMcap.zip.
+cp "$zip" "$out/RAMcap.zip"
 
 step "Done: RAMcap $version ($build)"
 echo "   App:     $app"
 echo "   Zip:     $zip"
 echo "   SHA-256: $sha"
+echo
+echo "Next: gh release create v$version \"$zip\" \"$out/RAMcap.zip\", then bump version and sha256"
+echo "in lior-pesoa/homebrew-tap Casks/ramcap.rb."

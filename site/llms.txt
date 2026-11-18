@@ -1,0 +1,30 @@
+# RAMcap
+
+> RAMcap is a free, open-source macOS menu bar app that sets a memory (RAM) limit for Google Chrome. When Chrome's total memory reaches the limit, RAMcap gives 20 seconds' notice and then stops the largest tab's process, before macOS shows "Your system has run out of application memory."
+
+- Website: https://ramcap.app/
+- Source code (MIT license): https://github.com/lior-pesoa/ramcap
+- Download (latest, signed and notarized): https://github.com/lior-pesoa/ramcap/releases/latest/download/RAMcap.zip
+- Homebrew: `brew tap lior-pesoa/tap && brew trust lior-pesoa/tap && brew install --cask lior-pesoa/tap/ramcap`
+- Requirements: macOS 14 or later, Google Chrome. Price: free.
+
+## What it does
+
+- Shows Chrome's total memory footprint in the menu bar (the same number Activity Monitor shows), updated every 15 seconds.
+- Warns at a set level (default 50% of the Mac's RAM).
+- At the hard limit (default 65% of RAM, adjustable with a slider) it picks the largest Chrome tab process and notifies "Stopping 1 Chrome tab in 20 s" with Protect and Stop now. If Chrome is still over the limit after 20 seconds, it stops that process. Any single tab over 25% of RAM is also stopped.
+- A stopped tab stays open as Chrome's "Aw, Snap" page; reloading restores it. Unsaved input in that tab is lost.
+- Never stops Chrome itself, extensions or the GPU process, only tab processes.
+- Optional: reads tab titles from Chrome's Task Manager (needs Accessibility permission) so tabs show by name, and lets the user pin tabs that are never stopped.
+
+## How it differs from Chrome's Memory Saver
+
+Memory Saver discards idle tabs to lower normal memory use, but it is not a limit: it skips the active tab and tabs playing media, in a call or with unsaved input. RAMcap adds a hard ceiling and works alongside Memory Saver. A Chrome extension can't do this because extensions can't read per-tab memory on stable Chrome and freeze with Chrome.
+
+## Limits
+
+- Stops tabs rather than sleeping them.
+- Can't tell which tab is in front.
+- One Chrome process can host several tabs of the same site; stopping it closes all of them.
+- Tab names need Chrome in English.
+- Google Chrome only for now; Arc, Brave and Edge are planned.

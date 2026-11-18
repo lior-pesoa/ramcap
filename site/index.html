@@ -1,0 +1,438 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RAMcap: set a memory (RAM) limit for Chrome on Mac</title>
+<meta name="description" content="Chrome using too much RAM on your Mac? RAMcap is a free, open-source menu bar app that sets a memory limit for Google Chrome and stops the largest tab before macOS says “Your system has run out of application memory.”">
+<link rel="canonical" href="https://ramcap.app/">
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:title" content="RAMcap: set a memory limit for Chrome">
+<meta property="og:description" content="A free Mac menu bar app. When Chrome hits your limit, RAMcap stops the largest tab before macOS runs out of memory.">
+<meta property="og:image" content="https://ramcap.app/images/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="RAMcap">
+<meta property="og:url" content="https://ramcap.app/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="color-scheme" content="light dark">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "RAMcap", "url": "https://ramcap.app/", "description": "A free, open-source macOS menu bar app that sets a memory limit for Google Chrome and stops the largest tab when Chrome reaches it.", "applicationCategory": "UtilitiesApplication", "operatingSystem": "macOS 14 or later", "softwareVersion": "0.1.0", "downloadUrl": "https://github.com/lior-pesoa/ramcap/releases/latest/download/RAMcap.zip", "installUrl": "https://ramcap.app/#install", "image": "https://ramcap.app/images/icon-512.png", "screenshot": "https://ramcap.app/images/panel.png", "license": "https://opensource.org/licenses/MIT", "isAccessibleForFree": true, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "author": {"@type": "Person", "name": "Lior Pesoa", "url": "https://github.com/lior-pesoa"}, "sameAs": ["https://github.com/lior-pesoa/ramcap"], "featureList": ["Chrome memory total in the menu bar", "Warning at a set level", "Hard memory limit that stops the largest tab", "20-second notice with Protect and Stop now", "Optional tab names from Chrome's Task Manager", "Pin tabs so they are never stopped"]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How do I limit Chrome's memory usage on a Mac?", "acceptedAnswer": {"@type": "Answer", "text": "Chrome has no setting for a memory limit. Install RAMcap, a free menu bar app, and set a limit with its slider (by default 65% of your Mac's RAM, for example 16 GB on a 24 GB Mac). When Chrome's total memory reaches the limit, RAMcap gives you 20 seconds' notice and then stops the largest tab's process."}}, {"@type": "Question", "name": "Why does my Mac say \"Your system has run out of application memory\"?", "acceptedAnswer": {"@type": "Answer", "text": "macOS shows this when apps together use more memory than your Mac has, even with swap. Google Chrome is a common cause: one heavy tab can grow to many gigabytes. Quit or reload the biggest tabs to recover. To keep it from happening again, cap Chrome's memory with RAMcap."}}, {"@type": "Question", "name": "Isn't Chrome's Memory Saver enough?", "acceptedAnswer": {"@type": "Answer", "text": "Memory Saver puts idle tabs to sleep, which lowers Chrome's usual memory. It is not a limit: it skips the tab you are using, tabs playing audio or video, tabs in a call and tabs with unsaved input, so a runaway tab can still use all your memory. RAMcap works alongside Memory Saver and adds the ceiling."}}, {"@type": "Question", "name": "What happens to a tab RAMcap stops?", "acceptedAnswer": {"@type": "Answer", "text": "The tab stays open and shows Chrome's \"Aw, Snap\" page. Reload it to load the page again. Anything unsaved in that tab, such as a half-written form, is lost, so protect tabs you can't lose."}}, {"@type": "Question", "name": "Can I stop RAMcap from closing a specific tab?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. When RAMcap is about to stop a tab, the notification has a Protect button. With tab names turned on, you can also pin any tab in the menu so RAMcap never stops it."}}, {"@type": "Question", "name": "Is RAMcap free and safe?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. RAMcap is free and open source under the MIT license, signed and notarized by Apple, and needs no admin password. It only reads memory figures and, if you turn on tab names, tab titles. Nothing leaves your Mac."}}, {"@type": "Question", "name": "Does RAMcap work with Safari, Arc, Brave or Edge?", "acceptedAnswer": {"@type": "Answer", "text": "Not yet. RAMcap works with Google Chrome on macOS 14 or later. Support for Arc, Brave and Edge, which are built on Chromium, is planned."}}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebSite", "name": "RAMcap", "url": "https://ramcap.app/"}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F4F4F6;
+  --surface: #FFFFFF;
+  --track: #E3E3E8;
+  --line: #E2E2E6;
+  --ink: #1D1D1F;
+  --ink-2: #6E6E73;
+  --ink-3: #A1A1A6;
+  --cap: #F2512F;
+  --ok: #28A745;
+  --warn: #D97A00;
+  --tint-cap: #FBE2E0;
+  --code: #1D1D1F;
+  --code-ink: #F5F5F7;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #161618;
+    --surface: #1F1F22;
+    --track: #38383C;
+    --line: #2E2E33;
+    --ink: #F5F5F7;
+    --ink-2: #A1A1A6;
+    --ink-3: #6E6E73;
+    --cap: #FF6342;
+    --ok: #30D158;
+    --warn: #FFB340;
+    --tint-cap: #46211E;
+    --code: #2A2A2E;
+    --code-ink: #F5F5F7;
+  }
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 400 17px/1.55 "Schibsted Grotesk", system-ui, -apple-system, sans-serif;
+  font-feature-settings: "tnum" 0;
+}
+.num { font-variant-numeric: tabular-nums; }
+a { color: inherit; text-decoration-color: var(--ink-3); text-underline-offset: 3px; }
+a:hover { text-decoration-color: var(--cap); }
+:focus-visible { outline: 2px solid var(--cap); outline-offset: 3px; border-radius: 4px; }
+
+.wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+
+/* Header */
+.top { display: flex; align-items: center; justify-content: space-between; padding: 22px 0; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px; text-decoration: none; }
+.brand svg { width: 22px; height: 22px; }
+.top nav { display: flex; gap: 22px; font-size: 15px; color: var(--ink-2); }
+.top nav a { text-decoration: none; }
+.top nav a:hover { color: var(--ink); }
+
+/* Hero */
+.hero { display: grid; grid-template-columns: 1.05fr 1fr; gap: 56px; align-items: center; padding: 56px 0 88px; }
+h1 {
+  font-size: clamp(44px, 6.4vw, 78px);
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+  font-weight: 800;
+  margin: 0 0 24px;
+  position: relative;
+}
+/* The headline wears the cap: a coral bar pressed on top of it. */
+h1::before {
+  content: "";
+  display: block;
+  width: 100%;
+  max-width: 7.2em;
+  height: 0.11em;
+  border-radius: 0.06em;
+  background: var(--cap);
+  margin-bottom: 0.22em;
+}
+.lede { font-size: 20px; color: var(--ink-2); max-width: 30em; margin: 0 0 32px; }
+.lede strong { color: var(--ink); font-weight: 600; }
+.cta { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--cap); color: #fff;
+  font: 600 16px/1 inherit; font-family: inherit;
+  padding: 14px 20px; border-radius: 10px; text-decoration: none; border: 0; cursor: pointer;
+}
+.btn:hover { filter: brightness(1.06); }
+.btn.quiet { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1px var(--line); }
+.btn.quiet:hover { box-shadow: inset 0 0 0 1px var(--ink-3); filter: none; }
+.fine { font-size: 14px; color: var(--ink-2); margin-top: 14px; }
+
+/* Demo: the menu panel, playing out a cap. */
+.demo {
+  background: var(--surface);
+  border-radius: 16px;
+  padding: 22px 22px 18px;
+  box-shadow: 0 0 0 1px var(--line), 0 30px 60px -30px rgba(29, 29, 31, 0.28);
+  max-width: 440px;
+  justify-self: end;
+  width: 100%;
+}
+.demo-head { display: flex; justify-content: space-between; align-items: center; font-size: 14px; color: var(--ink-2); }
+.pill { font-size: 13px; font-weight: 600; padding: 3px 10px; border-radius: 99px; background: color-mix(in srgb, var(--ok) 15%, transparent); color: var(--ok); transition: background .3s, color .3s; }
+.pill.over { background: var(--tint-cap); color: var(--cap); }
+.total { margin: 14px 0 4px; display: flex; align-items: baseline; gap: 10px; }
+.total b { font-size: 46px; font-weight: 700; letter-spacing: -0.03em; line-height: 1; }
+.total span { color: var(--ink-2); font-size: 15px; }
+.gauge { position: relative; height: 10px; background: var(--track); border-radius: 99px; margin: 14px 0 6px; }
+.gauge i { position: absolute; inset: 0 auto 0 0; width: 0; border-radius: 99px; background: var(--ok); transition: background .3s; }
+.gauge i.warn { background: var(--warn); }
+.gauge i.over { background: var(--cap); }
+.gauge .capmark { position: absolute; top: -6px; bottom: -6px; width: 3px; border-radius: 2px; background: var(--cap); }
+.scale { position: relative; height: 16px; font-size: 12px; color: var(--ink-3); }
+.scale span { position: absolute; top: 0; transform: translateX(-50%); white-space: nowrap; }
+.scale span:first-child { transform: none; }
+.scale span:last-child { transform: translateX(-100%); }
+.rows { list-style: none; margin: 18px 0 0; padding: 0; border-top: 1px solid var(--line); }
+.rows li { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 15px; transition: opacity .4s; }
+.rows li:last-child { border-bottom: 0; }
+.rows small { display: block; color: var(--ink-2); font-size: 12.5px; }
+.rows .state { font-size: 13px; color: var(--ink-3); white-space: nowrap; }
+.rows li.pending .state { color: var(--cap); font-weight: 600; }
+.rows li.stopped { opacity: .45; }
+.rows li.stopped .t { text-decoration: line-through; text-decoration-color: var(--cap); }
+.note {
+  margin-top: 14px; padding: 12px 14px; border-radius: 10px; font-size: 14px;
+  background: var(--bg); color: var(--ink-2); min-height: 48px;
+}
+.note b { color: var(--ink); font-weight: 600; }
+.replay { background: none; border: 0; color: var(--ink-2); font: inherit; font-size: 13px; padding: 8px 0 0; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--ink-3); }
+.replay:hover { color: var(--ink); }
+
+/* Sections */
+section { padding: 72px 0; border-top: 1px solid var(--line); }
+h2 { font-size: clamp(30px, 3.6vw, 42px); line-height: 1.08; letter-spacing: -0.025em; font-weight: 700; margin: 0 0 18px; max-width: 18em; }
+.prose { max-width: 36em; color: var(--ink-2); }
+.prose p { margin: 0 0 16px; }
+.prose strong { color: var(--ink); font-weight: 600; }
+
+.why { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; }
+.compare { list-style: none; margin: 0; padding: 0; font-size: 16px; }
+.compare li { display: grid; grid-template-columns: 9.5em 1fr 1fr; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.compare li:first-child { color: var(--ink-3); font-size: 14px; padding-top: 0; }
+.compare .yes { color: var(--ink); }
+.compare .no { color: var(--ink-3); }
+
+.steps { list-style: none; margin: 32px 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 36px; counter-reset: step; }
+.steps li { counter-increment: step; }
+.steps li::before {
+  content: counter(step);
+  display: inline-grid; place-items: center;
+  width: 30px; height: 30px; border-radius: 50%;
+  background: var(--surface); box-shadow: inset 0 0 0 1px var(--line);
+  font-weight: 600; font-size: 14px; color: var(--ink-2);
+  margin-bottom: 14px;
+}
+.steps h3 { font-size: 19px; margin: 0 0 6px; font-weight: 600; letter-spacing: -0.01em; }
+.steps p { margin: 0; color: var(--ink-2); }
+
+.names { display: grid; grid-template-columns: 1fr 340px; gap: 64px; align-items: start; }
+.names img { width: 100%; height: auto; border-radius: 14px; box-shadow: 0 0 0 1px var(--line), 0 30px 60px -30px rgba(29, 29, 31, 0.3); }
+
+.limits { list-style: none; padding: 0; margin: 8px 0 0; max-width: 40em; }
+.limits li { padding: 14px 0; border-bottom: 1px solid var(--line); color: var(--ink-2); }
+.limits li strong { color: var(--ink); font-weight: 600; }
+
+.install { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: start; }
+pre {
+  margin: 0; background: var(--code); color: var(--code-ink); border-radius: 12px;
+  padding: 18px 20px; overflow-x: auto; font: 500 14.5px/1.7 ui-monospace, "SF Mono", Menlo, monospace;
+}
+pre .c { color: #8E8E93; }
+.copy { margin-top: 10px; }
+
+.faq { max-width: 44em; margin-top: 8px; }
+.faq details { border-bottom: 1px solid var(--line); }
+.faq summary { cursor: pointer; list-style: none; padding: 18px 32px 18px 0; position: relative; }
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after { content: "+"; position: absolute; right: 4px; top: 14px; font-size: 24px; color: var(--ink-3); font-weight: 400; }
+.faq details[open] summary::after { content: "–"; }
+.faq h3 { display: inline; font-size: 19px; font-weight: 600; letter-spacing: -0.01em; }
+.faq p { margin: 0 0 20px; color: var(--ink-2); max-width: 40em; }
+
+footer { padding: 36px 0 56px; border-top: 1px solid var(--line); color: var(--ink-3); font-size: 14px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+
+.hero > *, .why > *, .names > *, .install > *, .steps > * { min-width: 0; }
+
+@media (max-width: 880px) {
+  .hero, .why, .names, .install { grid-template-columns: 1fr; gap: 40px; }
+  .hero { padding-top: 24px; }
+  .demo { justify-self: stretch; max-width: none; }
+  .steps { grid-template-columns: 1fr; gap: 28px; }
+  .names img { max-width: 340px; }
+  .top nav a:not(:last-child) { display: none; }
+}
+@media (max-width: 520px) {
+  .wrap { padding: 0 16px; }
+  .compare li { grid-template-columns: 1fr 1fr; }
+  .compare li > :first-child { grid-column: 1 / -1; color: var(--ink); font-weight: 500; }
+  .compare li:first-child > :first-child { display: none; }
+  .lede { font-size: 18px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a class="brand" href="/" aria-label="RAMcap home">
+      <svg viewBox="0 0 18 18" aria-hidden="true"><rect x="1" y="2" width="16" height="2.4" rx="1.2" fill="var(--cap)"/><rect x="2.6" y="11" width="3.2" height="5" rx="1" fill="currentColor"/><rect x="7.4" y="8" width="3.2" height="8" rx="1" fill="currentColor"/><path d="M12.2 5.6h3.2V15a1 1 0 0 1-1 1h-1.2a1 1 0 0 1-1-1z" fill="currentColor"/></svg>
+      RAMcap
+    </a>
+    <nav>
+      <a href="#how">How it works</a>
+      <a href="#limits">Limits</a>
+      <a href="#faq">FAQ</a>
+      <a href="https://github.com/lior-pesoa/ramcap">GitHub</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="hero">
+      <div>
+        <h1>Set a memory limit for Chrome.</h1>
+        <p class="lede">RAMcap lives in your Mac’s menu bar and watches how much memory Chrome uses. When Chrome hits your limit, <strong>it stops the largest tab</strong> before macOS runs out of memory and freezes everything.</p>
+        <div class="cta">
+          <a class="btn" href="https://github.com/lior-pesoa/ramcap/releases/latest/download/RAMcap.zip">Download for Mac</a>
+          <a class="btn quiet" href="#install">Install with Homebrew</a>
+        </div>
+        <p class="fine">Free and open source. macOS 14 or later. Signed and notarized by Apple.</p>
+      </div>
+
+      <div class="demo" id="demo" aria-label="Demo of RAMcap stopping a tab at the limit">
+        <div class="demo-head"><span>Chrome is using</span><span class="pill" id="pill">Under limit</span></div>
+        <div class="total"><b class="num" id="total">9.6 GB</b><span>of 16 GB limit</span></div>
+        <div class="gauge"><i id="bar"></i><span class="capmark" style="left: calc(66.6% - 1px)"></span></div>
+        <div class="scale num"><span style="left:0">0</span><span style="left:50%">warn 12</span><span style="left:66.6%">limit 16</span><span style="left:100%">24 GB</span></div>
+        <ul class="rows" id="rows">
+          <li data-gb="6.1"><div><span class="t">YouTube: Conference talk</span><small class="num">6.1 GB</small></div><span class="state">Largest</span></li>
+          <li><div><span class="t">Figma: Design file</span><small class="num">2.4 GB</small></div><span class="state"></span></li>
+          <li><div><span class="t">Google Docs: Quarterly plan</span><small class="num">1.3 GB</small></div><span class="state">Protected</span></li>
+          <li><div><span class="t">GitHub (3 tabs)</span><small class="num">0.9 GB</small></div><span class="state"></span></li>
+        </ul>
+        <div class="note" id="note" aria-live="polite">Under 16 GB. RAMcap just watches.</div>
+        <button class="replay" id="replay" type="button">Replay</button>
+      </div>
+    </div>
+
+    <section class="why" id="why">
+      <div>
+        <h2>Chrome has no memory limit. Now it has one.</h2>
+        <div class="prose">
+          <p>Chrome reached 30.5 GB on a 24 GB Mac, and macOS paused every app: “Your system has run out of application memory.” One runaway tab is enough.</p>
+          <p>Memory Saver helps, but it only puts idle tabs to sleep. It never touches the tab you’re using, a tab playing video, or one in a call, so it can’t stop a runaway. RAMcap sets a ceiling and keeps Chrome under it.</p>
+        </div>
+      </div>
+      <ul class="compare">
+        <li><span></span><span>Memory Saver</span><span>RAMcap</span></li>
+        <li><span>Lowers normal use</span><span class="yes">Yes</span><span class="yes">No, works alongside it</span></li>
+        <li><span>Hard memory limit</span><span class="no">No</span><span class="yes">Yes, you set it</span></li>
+        <li><span>Stops a runaway tab in use</span><span class="no">No</span><span class="yes">Yes, with 20 s warning</span></li>
+        <li><span>Shows memory in the menu bar</span><span class="no">No</span><span class="yes">Yes</span></li>
+      </ul>
+    </section>
+
+    <section id="how">
+      <h2>How it works</h2>
+      <div class="prose"><p>RAMcap adds up the real memory of every Chrome process every 15 seconds, the same number Activity Monitor shows. The defaults scale with your Mac’s memory; drag the slider to change them.</p></div>
+      <ol class="steps">
+        <li><h3>A warning at half your RAM</h3><p>Chrome passes 12 GB on a 24 GB Mac and you get a notification. Nothing is stopped.</p></li>
+        <li><h3>20 seconds’ notice at the limit</h3><p>At 16 GB RAMcap picks the largest tab and tells you. Click Protect to keep it, or Stop now.</p></li>
+        <li><h3>The tab is stopped</h3><p>If Chrome is still over the limit, that tab’s process ends. It stays open as “Aw, Snap”; reload it to bring it back.</p></li>
+      </ol>
+    </section>
+
+    <section class="names">
+      <div>
+        <h2>See which tab is which, and protect the ones that matter.</h2>
+        <div class="prose">
+          <p>macOS doesn’t tell apps which Chrome tab lives in which process. Turn on tab names and RAMcap reads the titles from Chrome’s own Task Manager, so the menu shows <strong>Figma: Design file, 1.01 GB</strong> instead of a process ID.</p>
+          <p>Pin a tab and RAMcap never stops it. Tab names are optional: they need Accessibility permission, and the setup window walks you through it. RAMcap reads tab titles, memory and process IDs, nothing else, and nothing leaves your Mac.</p>
+        </div>
+      </div>
+      <img src="/images/panel.png" width="340" height="837" alt="The RAMcap menu: Chrome at 9.6 GB of a 16 GB limit, the five largest tabs listed by name, one marked Protected" loading="lazy">
+    </section>
+
+    <section id="limits">
+      <h2>What to know before you install</h2>
+      <ul class="limits">
+        <li><strong>It stops tabs, it doesn’t sleep them.</strong> Anything unsaved in a stopped tab is lost. Protect tabs you can’t lose.</li>
+        <li><strong>It can’t tell which tab is in front.</strong> The largest tab goes even if you’re looking at it, which is what the 20 seconds are for.</li>
+        <li><strong>One process can hold several tabs</strong> of the same site. Stopping it closes all of them, and the menu says so.</li>
+        <li><strong>Tab names need Chrome in English</strong> and may break when Chrome changes its Task Manager. Everything else keeps working without them.</li>
+        <li><strong>Google Chrome only, for now.</strong> Arc, Brave and Edge are planned.</li>
+      </ul>
+    </section>
+
+    <section id="faq">
+      <h2>Questions</h2>
+      <div class="faq">
+        <details open><summary><h3>How do I limit Chrome’s memory usage on a Mac?</h3></summary><p>Chrome has no setting for a memory limit. Install RAMcap, a free menu bar app, and set a limit with its slider (by default 65% of your Mac’s RAM, for example 16 GB on a 24 GB Mac). When Chrome’s total memory reaches the limit, RAMcap gives you 20 seconds’ notice and then stops the largest tab’s process.</p></details>
+        <details><summary><h3>Why does my Mac say “Your system has run out of application memory”?</h3></summary><p>macOS shows this when apps together use more memory than your Mac has, even with swap. Google Chrome is a common cause: one heavy tab can grow to many gigabytes. Quit or reload the biggest tabs to recover. To keep it from happening again, cap Chrome’s memory with RAMcap.</p></details>
+        <details><summary><h3>Isn’t Chrome’s Memory Saver enough?</h3></summary><p>Memory Saver puts idle tabs to sleep, which lowers Chrome’s usual memory. It is not a limit: it skips the tab you are using, tabs playing audio or video, tabs in a call and tabs with unsaved input, so a runaway tab can still use all your memory. RAMcap works alongside Memory Saver and adds the ceiling.</p></details>
+        <details><summary><h3>What happens to a tab RAMcap stops?</h3></summary><p>The tab stays open and shows Chrome’s “Aw, Snap” page. Reload it to load the page again. Anything unsaved in that tab, such as a half-written form, is lost, so protect tabs you can’t lose.</p></details>
+        <details><summary><h3>Can I stop RAMcap from closing a specific tab?</h3></summary><p>Yes. When RAMcap is about to stop a tab, the notification has a Protect button. With tab names turned on, you can also pin any tab in the menu so RAMcap never stops it.</p></details>
+        <details><summary><h3>Is RAMcap free and safe?</h3></summary><p>Yes. RAMcap is free and open source under the MIT license, signed and notarized by Apple, and needs no admin password. It only reads memory figures and, if you turn on tab names, tab titles. Nothing leaves your Mac.</p></details>
+        <details><summary><h3>Does RAMcap work with Safari, Arc, Brave or Edge?</h3></summary><p>Not yet. RAMcap works with Google Chrome on macOS 14 or later. Support for Arc, Brave and Edge, which are built on Chromium, is planned.</p></details>
+      </div>
+    </section>
+
+    <section class="install" id="install">
+      <div>
+        <h2>Install</h2>
+        <div class="prose">
+          <p>Download the zip, unzip it and move RAMcap to Applications. Or use Homebrew; it asks you to trust the tap once.</p>
+          <p><a href="https://github.com/lior-pesoa/ramcap/releases/latest">All releases</a> · <a href="https://github.com/lior-pesoa/ramcap">Source on GitHub</a> (MIT)</p>
+        </div>
+      </div>
+      <div>
+<pre id="brew"><code>brew tap lior-pesoa/tap
+brew trust lior-pesoa/tap
+brew install --cask lior-pesoa/tap/ramcap</code></pre>
+        <button class="btn quiet copy" id="copy" type="button">Copy commands</button>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span>RAMcap is free and open source.</span>
+    <span>Not affiliated with Google. Chrome is a trademark of Google LLC.</span>
+  </footer>
+</div>
+
+<script>
+(() => {
+  const LIMIT = 16, MAX = 24, WARN = 12;
+  const $ = (id) => document.getElementById(id);
+  const total = $("total"), bar = $("bar"), pill = $("pill"), note = $("note"), rows = [...$("rows").children];
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let timers = [];
+
+  function show(gb) {
+    total.textContent = gb.toFixed(1) + " GB";
+    bar.style.width = Math.min(gb / MAX, 1) * 100 + "%";
+    bar.className = gb >= LIMIT ? "over" : gb >= WARN ? "warn" : "";
+    pill.className = "pill" + (gb >= LIMIT ? " over" : "");
+    pill.textContent = gb >= LIMIT ? "Over limit" : "Under limit";
+  }
+  function reset() {
+    timers.forEach(clearTimeout); timers = [];
+    rows[0].className = ""; rows[0].querySelector(".state").textContent = "Largest";
+    rows[0].querySelector("small").textContent = "6.1 GB";
+  }
+  function end() {
+    reset();
+    rows[0].className = "stopped";
+    rows[0].querySelector(".state").textContent = "Stopped";
+    rows[0].querySelector("small").textContent = "Reload to bring it back";
+    show(10.1);
+    note.innerHTML = "<b>Stopped 1 tab using 6.1 GB.</b> Chrome was at 16.2 GB.";
+  }
+  function count(from, to, ms, done) {
+    const t0 = performance.now();
+    const step = (t) => {
+      const k = Math.min((t - t0) / ms, 1), e = 1 - Math.pow(1 - k, 3);
+      show(from + (to - from) * e);
+      if (k < 1) requestAnimationFrame(step); else done && done();
+    };
+    requestAnimationFrame(step);
+  }
+  function play() {
+    reset();
+    show(9.6);
+    note.textContent = "Under 16 GB. RAMcap just watches.";
+    const at = (ms, fn) => timers.push(setTimeout(fn, ms));
+    at(600, () => count(9.6, 12.4, 1400, () => { note.innerHTML = "<b>Passed the 12 GB warning.</b> Nothing stopped yet."; }));
+    at(3000, () => count(12.4, 16.2, 1800, () => {
+      rows[0].className = "pending";
+      note.innerHTML = "<b>Stopping 1 Chrome tab in 20 s.</b> Protect it, or Stop now.";
+      let s = 20;
+      const tick = () => {
+        rows[0].querySelector(".state").textContent = "Stopping in " + s + " s";
+        if (s-- > 0) at(110, tick); else at(300, () => {
+          rows[0].className = "stopped";
+          rows[0].querySelector(".state").textContent = "Stopped";
+          rows[0].querySelector("small").textContent = "Reload to bring it back";
+          count(16.2, 10.1, 900, () => { note.innerHTML = "<b>Stopped 1 tab using 6.1 GB.</b> Chrome was at 16.2 GB."; });
+        });
+      };
+      tick();
+    }));
+  }
+
+  $("replay").addEventListener("click", () => (reduce ? end() : play()));
+  if (reduce) { end(); }
+  else if ("IntersectionObserver" in window) {
+    show(9.6);
+    const io = new IntersectionObserver((e) => { if (e[0].isIntersecting) { io.disconnect(); play(); } }, { threshold: 0.5 });
+    io.observe($("demo"));
+  } else { play(); }
+
+  $("copy").addEventListener("click", async (ev) => {
+    try {
+      await navigator.clipboard.writeText($("brew").innerText.trim());
+      ev.target.textContent = "Copied";
+    } catch { ev.target.textContent = "Select and copy the commands above"; }
+    setTimeout(() => (ev.target.textContent = "Copy commands"), 2000);
+  });
+})();
+</script>
+</body>
+</html>
