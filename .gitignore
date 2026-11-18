@@ -1,0 +1,8 @@
+.build/
+.swiftpm/
+DerivedData/
+*.xcuserstate
+.DS_Store
+App/RAMcap.xcodeproj/
+dist/
+docs/PLAN.md

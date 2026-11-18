@@ -1,0 +1,39 @@
+# Xcode project for release builds (scripts/release.sh). Generate with
+#   cd App && xcodegen generate
+# The project is git-ignored; this file is the source of truth. Day-to-day
+# builds still use scripts/make-app.sh (SwiftPM, ad-hoc signed).
+name: RAMcap
+options:
+  bundleIdPrefix: app.ramcap
+  deploymentTarget:
+    macOS: "14.0"
+packages:
+  RAMcap:
+    path: ..
+settings:
+  base:
+    DEVELOPMENT_TEAM: L5LZ6NU65K
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    SWIFT_VERSION: "6.0"
+targets:
+  RAMcap:
+    type: application
+    platform: macOS
+    sources:
+      - path: ../Sources/RAMcapApp
+      - path: AppIcon.icns
+        buildPhase: resources
+    dependencies:
+      - package: RAMcap
+        product: RAMcapCore
+    settings:
+      base:
+        PRODUCT_NAME: RAMcap
+        PRODUCT_BUNDLE_IDENTIFIER: app.ramcap.RAMcap
+        INFOPLIST_FILE: Info.plist
+        GENERATE_INFOPLIST_FILE: NO
+        ENABLE_HARDENED_RUNTIME: YES
+        ENABLE_APP_SANDBOX: NO
+        CODE_SIGN_STYLE: Automatic
+        ASSETCATALOG_COMPILER_APPICON_NAME: ""
